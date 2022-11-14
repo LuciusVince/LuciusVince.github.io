@@ -1,0 +1,17 @@
+PythonLib um mit einem Befehl CMD-Befehle auszufuehren und Rueckgabe in Variable zu speichern
+
+
+from easycmd import *
+
+result = cmd("ls -l")        # returns stdout & stderr
+easycmd.stdout               # returns only stdin
+easycmd.stderr               # returns only stderr
+retVal = easycmd.lastRetVal  # returns retval
+success = easycmd.success    # return false if error happened
+
+if retVal != "0":
+  print("Error")
+else:
+  print(result)
+
+

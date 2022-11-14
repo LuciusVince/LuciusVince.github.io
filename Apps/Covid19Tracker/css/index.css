@@ -1,0 +1,417 @@
+/* *************************** */
+/*          Variablen          */
+/* *************************** */
+:root {
+  /* Allgemeine Einstellungen */
+  --fontFamily: sans-serif;
+  --textFarbe: #FFFFFF;
+
+  /* Hintergrundmuster */
+  /* Original, bevor der radielle Farbverlauf zum Hintergrund zugefuegt wurde
+  --musterFarbe: #8CD0FC10;
+  --musterHintergrund: #00050a;
+  --musterQuadratGroesze: 10px; */
+  --musterFarbe: #ACF0FE10;
+  --musterHintergrund: #00050c;
+  --musterQuadratGroesze: 10px;
+
+  /* Header / Footer Allgemein */
+  --obenHoehe: 50px;
+  --untenHoehe: 30px;
+  --headerFooterHintergrund: #151515;
+  --headerFooterRahmen: 1px solid cyan;
+  --headerFooterHoehe: calc(var(--obenHoehe) + var(--untenHoehe));
+
+  /* Oben */
+  --RequiredWidthForCombobox: calc(292px + 10px); 
+  --maxWidthOfUeberschrift: calc(100% - var(--RequiredWidthForCombobox));
+  --halfRequiredWidthForCombobox: calc(var(--RequiredWidthForCombobox) / 1.3 );
+  --leftOfUeberschrift: calc(100% / 2 - var(--halfRequiredWidthForCombobox));
+  --leftOfCombobox: calc(var(--leftOfUeberschrift) + 170px);
+
+  --headerTextLeft: calc(100% / 2 - var(--halfRequiredWidthForCombobox));
+
+  /* Unten */
+
+  /* Mitte */
+  --mitteHoehe: calc(100% - var(--headerFooterHoehe));
+
+  /* Mitte / PfeilButtons */
+  --buttonBreite: 30px;
+  --buttonHoehe: 90%; 
+  --halbeButtonHoehe: calc(var(--buttonHoehe) / 2);
+  --buttonPlatzObenUntenGesamt: calc(100% - var(--buttonHoehe));
+  --halberButtonPlatzObenUntenGesamt: calc(var(--buttonPlatzObenUntenGesamt) / 2);
+
+  --pfeilAbstandVertikal: calc(var(--halbeButtonHoehe) - var(--halberButtonPlatzObenUntenGesamt));
+  --pfeilAbstandVertikal: calc(var(--buttonPlatzObenUntenGesamt) + var(--halbeButtonHoehe));
+  --pfeilAbstandVertikal: calc(var(--buttonPlatzObenUntenGesamt) / 2);
+
+  --horizontalerPlatzProPfeil: 5%;
+  --horizontalerPlatzPfeileGesamt: calc(2 * var(--horizontalerPlatzProPfeil));
+  --pfeilAbstandHorizontal: calc(var(--horizontalerPlatzProPfeil) / 2);
+
+  /* Deutschlandkarte */
+  --hintergrundFarbeDerBundeslaender: #F5F5F5D0;
+  --hintergrundFarbeDerBundeslaenderHover: cyan;
+  --grenzFarbeDerBundeslaender: #000000D0;
+  --brdTop: 0px;
+
+  /* Charts */
+  --chartContainerWidth: calc(100% - var(--horizontalerPlatzPfeileGesamt));
+  --chartContainerLeft: var(--horizontalerPlatzProPfeil);
+
+  --chartHeight: 100%;
+
+  --chartWidthGraph: 100%;
+  --chartWidthBarChart: 2000px; /* TODO: Sollte dynamisch durch python berechnet und eingefuegt werden */
+  --chartWidthPieChart: 100%;
+
+
+
+  --chartWidthGraphAndBarChart: calc(var(--chartWidthGraph) + var(--chartWidthBarChart));
+  --totalChartWrapperWidth: calc(var(--chartWidthGraphAndBarChart) + var(--chartWidthPieChart));
+
+}
+
+/* *************************** */
+/*             TAGS            */
+/* *************************** */
+html, body {
+    width: 100%;
+    height: 100%;
+
+    position: relative;
+    top: 0;
+    left: 0;
+    margin:0; 
+    padding:0; 
+
+    overflow: hidden;
+
+    /* Algemeine Einstellungen */
+    font-family: var(--fontFamily);
+    color: var(--textFarbe);
+
+    /* Muster */
+    background-color: var(--musterHintergrund);
+    background-position: -2px -2px, -2px -2px, -1px -1px, -1px -1px;
+    background-size: var(--musterQuadratGroesze)  var(--musterQuadratGroesze) , var(--musterQuadratGroesze)  8px;
+
+    background-image:
+      linear-gradient(var(--musterFarbe) 1px, transparent 1px),
+      linear-gradient(90deg, var(--musterFarbe) 1px, transparent 1px);
+}
+
+button {
+  position: absolute;
+  width: var(--buttonBreite);
+  height: var(--buttonHoehe);
+  top: var(--pfeilAbstandVertikal);
+  z-index: 2;
+}
+
+
+/* *************************** */
+/*          Container          */
+/* *************************** */
+#Gesamt {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+
+  box-sizing: border-box;
+
+  /* Radialer Hintergrund */
+   background-image: radial-gradient(farthest-corner at 50% 50%,
+      #00000000 0%, #000000F0 104%);
+}
+
+#Oben {
+  overflow: hidden;
+  position: absolute;
+  width: 100% ;
+  height: var(--obenHoehe);
+  display: table;
+
+}
+
+#HeaderParent {
+  position: absolute;
+  height: 100%;
+  max-height: 100%;
+  display: table;
+  left: var(--headerTextLeft);
+  text-align: center;
+}
+
+#Header {
+  display: table-cell;
+  vertical-align: middle;
+}
+
+/* Combobox (damit sie weitesgehend selbstaendig angezeigt und nicht vom parent-div eingeschraenkt wird) */
+#ComboboxContainer {
+  /* position: absolute; */
+  position: fixed;
+  z-index: 2;
+  top: 7px;
+  right: 10px;
+  left: var(--leftOfCombobox);
+}
+
+#Mitte {
+  position: absolute;
+  width: 100%;
+  height: var(--mitteHoehe);
+
+  top: var(--obenHoehe);
+}
+
+#BRDView {
+  position: absolute;
+  animation-timing-function: ease-in;
+  animation: VonUntenEinblenden 2.5s;
+  /*          
+  width: var(--svgWidth);               
+  height: var(--svgHeight);             
+  */
+  /*
+  left: var(--svgLeft);
+  top: var(--svgTop);   
+  */
+  top: var(--brdTop);
+  width: var(--svgWidth);               
+  height: var(--svgHeight);             
+  height: 100%;                         
+  position:relative;  
+  margin-left:auto; margin-right: auto;
+}                       
+
+#BRDView svg {
+  /* --h: calc(98vh - var(--)); */
+  --h: calc(var(--mitteHeight) * 1);
+  position: absolute;
+  top: 1vh;
+  left: 1vw;
+  height: 98vw;
+  height: var(--h);
+  width: 98vh;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+}
+
+/* Farbe der Bundeslaender */
+#BRDView svg path {
+  fill: var(--hintergrundFarbeDerBundeslaender) !important; /* !important, sonst wird die CSS-Regel durch das SVG-Fill annuliert */
+  fill: var(--hintergrundFarbeDerBundeslaender); 
+  stroke: var(--grenzFarbeDerBundeslaender);
+  stroke-width: 0.1;
+  /* stroke:none !important; */ /* Um Stroke zu deaktivieren */
+  pointer-events:all; /* https://stackoverflow.com/a/17616309 */
+}
+
+/* Farbe der Bundeslaender bei Hover */
+#BRDView svg path:hover {
+  fill: var(--hintergrundFarbeDerBundeslaenderHover) !important; /* !important, sonst wird die CSS-Regel durch das SVG-Fill annuliert */
+  pointer-events:all; /* https://stackoverflow.com/a/17616309 */
+}
+
+
+#ChartControl
+{
+    width: var(--chartContainerWidth);
+    height: 100%;
+}
+
+#ChartContainer {
+}
+
+#graphChartContainerWrapper {
+  position: absolute;
+  display: flex;
+  width: 90%;
+  height: 100%; /* Ich weisz nicht wieso, aber dieser Height-Wert wird automatisch vom Barchart uebernommen (moeglicherweise auch von weiteren Charts) */
+  height: var(--chartHeight); /* Ich weisz nicht wieso, aber dieser Height-Wert wird automatisch vom Barchart uebernommen (moeglicherweise auch von weiteren Charts) */
+  left: 5%;
+  left: var(--chartContainerLeft);
+}
+
+#graphContainer {
+}
+
+#barChartContainerWrapper {
+  position: absolute;
+  /* display: flex; */ /* flex verhindert anzeigen der Scrollbar */
+  width: 90%;
+  height: var(--chartHeight); 
+  left: 5%;
+  overflow-x: auto;
+  overflow-y: hidden;
+}
+
+#barChartContainer {
+/* #barChartContainer, #barChartContainer .bk canvas {
+/* #barChartContainer, #barChartContainer .bk, #barChartContainer .bk canvas {
+/*  position: absolute; */  /* Auskommentiert da sich sonst graph und barchart ueberlappen */
+
+/* UPDATE!                   */
+/* Wird in Template gesetzt! */
+}
+
+#pieChartContainerWrapper {
+  position: absolute;
+  display: flex;
+  width: 90%;
+  height: var(--chartHeight); 
+  left: 5%;
+}
+
+#pieChartContainer {
+}
+
+#PfeilLinks {
+  left:  var(--pfeilAbstandHorizontal);
+}
+
+#PfeilRechts {
+  right:  var(--pfeilAbstandHorizontal);
+}
+
+#Unten {
+  position: absolute;
+  width: 100%;
+  height: var(--untenHoehe);
+
+  bottom: 0px;
+  display: table;
+}
+
+#Copyright {
+  text-align: center;
+  vertical-align: middle;
+  display: table-cell;
+}
+
+#LetztesUpdate {
+  position: absolute;
+  text-align: center;
+  vertical-align: middle;
+  display: table-cell;
+  font-size: 10px;
+  right: 5px;
+  top: 2px;
+}
+
+
+/* *************************** */
+/*           Klassen           */
+/* *************************** */
+.O {
+  display: none !important;
+}
+
+.HeaderFooter {
+  background: var(--headerFooterHintergrund);
+  border: var(--headerFooterRahmen);
+  box-sizing: border-box;
+}
+
+.PfeilHintergrund {
+  border: solid black;
+  border-width: 0 3px 3px 0;
+  display: inline-block;
+  padding: 3px;
+}
+
+.PfeilHintergrundRechts {
+  transform: rotate(-45deg);
+}
+
+.PfeilHintergrundLinks {
+  transform: rotate(135deg);
+}
+
+/* Animationen um Charts zu bewegen */
+.Links0 {
+  position: absolute;
+  animation: Links0Animation 2.5s;
+  animation-fill-mode: forwards; 
+}
+
+.Links1 {
+  position: absolute;
+  animation: Links1Animation 2.5s;
+  animation-fill-mode: forwards; 
+}
+
+.Links2 {
+  position: absolute;
+  animation: Links2Animation 2.5s;
+  animation-fill-mode: forwards; 
+}
+
+.Rechts0 {
+  position: absolute;
+  animation: Rechts0Animation 2.5s;
+  animation-fill-mode: forwards; 
+}
+
+.Rechts1 {
+  position: absolute;
+  animation: Rechts1Animation 2.5s;
+  animation-fill-mode: forwards; 
+}
+
+.Rechts2 {
+  position: absolute;
+  animation: Rechts2Animation 2.5s;
+  animation-fill-mode: forwards; 
+}
+
+/* *************************** */
+/*   Animationen / Keyframes   */
+/* *************************** */
+@keyframes VonUntenEinblenden {                          
+  from { top:  100%; }                           
+  to { top: var(--brdTop); }                     
+}                                                
+
+/* Graphen ein-/ausblenden */
+/* Bei Rechts und Links nehmen wir die LEFT-Property, da sonst left und right zugleich gesetzt werden*/
+@keyframes Links0Animation {  
+  from { left: -100%; } 
+ /*  to { left: 0%; } */
+  to { left: var(--chartContainerLeft); }
+}                               
+
+
+@keyframes Links1Animation {  
+  /* from { left: 0%; } */
+  from { left: var(--chartContainerLeft); } 
+  to { left: 100%; }
+}                               
+
+@keyframes Links2Animation {  
+  from { left: 100%; } 
+  to { left: 200%; }
+}                               
+
+@keyframes Rechts0Animation {  
+  from { left: 100%; } 
+  /*to { left: 0%; } */
+  to { left: var(--chartContainerLeft); }
+}                               
+
+@keyframes Rechts1Animation {  
+  /* from { left: 0%; } */
+  from { left: var(--chartContainerLeft); } 
+  to { left: -100%; }
+}                               
+
+@keyframes Rechts2Animation {  
+  from { left: -100%; } 
+  to { left: -200%; }
+}                          

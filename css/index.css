@@ -1,0 +1,83 @@
+:root {
+  --bodyBorder: solid 1px #CCCBCB;
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  font-family: sans;
+  color: #393939;
+  --zeilenHoehe: 90px;
+  --logoHoehe: calc(var(--zeilenHoehe) - 25px);
+}
+
+.logo {
+  max-height: var(--logoHoehe);
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+th {
+  background: #34304a;
+  color: #FFF;
+}
+
+
+tr {
+  height: var(--zeilenHoehe);
+}
+
+tr:hover {
+  background: gold;
+}
+
+td {
+  border-right: solid 1px #DBDADA;
+  border-bottom: var(--body-border);
+  padding-left: 7px;
+    white-space: nowrap;
+}
+
+td img{
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+#UsernameGeneratorPreview {
+  text-align: center;
+  font-size: 19px;
+}
+#UsernameGeneratorPreview:after {
+  content: "";
+  animation: UsernameGeneratorAnimation 24s infinite;
+}
+
+#slideshareNetDownloaderLogo {
+  font-family: monospace;
+  font-size: 5px;
+  font-weight: bolder;
+}
+
+@keyframes UsernameGeneratorAnimation {
+0% { content: "Glad Caterpillar"; color: #1771bf; }
+6% { content: "Savvy Boa"; color: #17bf31; }
+12% { content: "Elegant Mouse"; color: #f22d00; }
+18% { content: "Amazing Mule"; color: #f2c100; }
+24% { content: "Concise Hippopotamus"; color: #00b9f2; }
+30% { content: "Undisputable Mongoose"; color: #f200b5; }
+36% { content: "Competitive Marsupial"; color: #b7ac05; }
+42% { content: "Proactive Whippet"; color: #0028ff; }
+48% { content: "Godlike Parrotfish"; color: #bb1313; }
+54% { content: "Foolproof Cobra"; color: #bb1313; }
+60% { content: "Cute Shark"; color: #057c82; }
+66% { content: "Succeed Pig"; color: #fb0cd6; }
+72% { content: "Unrestricted Mandrill"; color: #fb660c; }
+78% { content: "Patriot Wombat"; color: #47a407; }
+89% { content: "Victory Tuna"; color: #0ac1b0; }
+100% { content: "Gooood Herring"; color: #f71212; }
+
+}

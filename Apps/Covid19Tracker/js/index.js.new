@@ -1,0 +1,221 @@
+// Globale Variablen
+var g_isCurrentViewMain = 1; // 1 wenn Map/Burtin, 0 wenn Graph, BarChart oder PieChart
+var g_mainViewIndex = 0;
+var g_chartIndex = 0;
+var g_mainViewContainerIDs = ["BRDContainerWrapper", "BurtinChartContainerWrapper"];
+var g_chartContainerIDs = ["graphContainer", "barChartContainer", "pieChartContainer"];
+var g_chartContainerIDs = ["graphContainer", "barChartContainerWrapper", "pieChartContainer"];
+var g_chartIndex = 0;
+
+var menueShown = 0;
+
+// Combobox-Eintraege-Text => UTF-7 / Covid19-Daten-Key
+var BundeslandIdDict = {};
+BundeslandIdDict["baden württemberg"] = "Baden-Wurttemberg";
+BundeslandIdDict["Baden-Württemberg"] = "Baden-Wurttemberg";
+BundeslandIdDict["Baden-W&uuml;rttemberg"] = "Baden-Wurttemberg";
+BundeslandIdDict["Bayern"] = "Bayern";
+BundeslandIdDict["Berlin"] = "Berlin";
+BundeslandIdDict["Brandenburg"] = "Brandenburg";
+BundeslandIdDict["Bremen"] = "Bremen";
+BundeslandIdDict["Hamburg"] = "Hamburg";
+BundeslandIdDict["Hessen"] = "Hessen";
+BundeslandIdDict["Mecklenburg-Vorpommern"] = "Mecklenburg-Vorpommern";
+BundeslandIdDict["Niedersachsen"] = "Niedersachsen";
+BundeslandIdDict["Nordrhein Westfalen"] = "Nordrhein-Westfalen";
+BundeslandIdDict["Rheinland-Pfalz"] = "Rheinland-Pfalz";
+BundeslandIdDict["Saarland"] = "Saarland";
+BundeslandIdDict["Sachsen"] = "Sachsen";
+BundeslandIdDict["Sachsen-Anhalt"] = "Sachsen-Anhalt";
+BundeslandIdDict["Schleswig-Holstein"] = "Schleswig-Holstein";
+BundeslandIdDict["Schleswig-Holstein "] = "Schleswig-Holstein"; // hotfix, aus unbekannten Gruenden enthaelt Schleswig-Holstein am Ende ein Leerzeichen
+BundeslandIdDict["Thüringen"] = "Thuringen";
+BundeslandIdDict["Th&uuml;ringen"] = "Thuringen";
+
+// SVG-g-tag-IDs => Covid19-Daten-Key
+BundeslandIdDict["SchleswigHolstein"] = "Schleswig-Holstein";
+BundeslandIdDict["SachsenAnhalt"] = "Sachsen-Anhalt";
+BundeslandIdDict["RheinlandPfalz"] = "Rheinland-Pfalz";
+BundeslandIdDict["NordrheinWestfalen"] = "Nordrhein-Westfalen";
+BundeslandIdDict["MecklenburgVorpommern"] = "Mecklenburg-Vorpommern";
+BundeslandIdDict["BadenWuerttemberg"] = "Baden-Wurttemberg";
+
+function InitializeEventhandlers() {
+  InitializeOnResizeEventhandler();
+  InitializeSvgEventhandler();
+}
+
+function InitializeOnResizeEventhandler() {
+  window.onresize = HandleWindowResizeForBokehCharts;
+}
+
+function InitializeSvgEventhandler() {
+  var SvgGTags = document.getElementsByTagName("path");
+  for(var i = 0; i < SvgGTags.length; i++) {
+    //SvgGTags[i].onclick = function() {console.log(this.id); };
+    //SvgGTags[i].onclick = function() {ShowChart(this.id); ClickCmbItem(this.id); };  
+    SvgGTags[i].onclick = function() {ClickCmbItem(this.id); };  
+  }  
+}
+
+function InitializeClassChangeEventhandler(targetId) {
+  var targetElement = document.getElementById(targetId);
+
+  var observer = new MutationObserver(function (event) {
+    console.log(event)   
+  });
+
+  observer.observe(targetElement, {
+  attributes: true, 
+  attributeFilter: ['class'],
+  childList: false, 
+  characterData: false
+  });
+}
+
+// Damit Combobox bei Click auf Bundesland aktualisiert wird
+function ClickCmbItem(pathId) {
+  comboboxSvgIDDict = {};
+  comboboxSvgIDDict["BadenWuerttemberg"] = 2;
+  comboboxSvgIDDict["Bayern"] = 3;
+  comboboxSvgIDDict["Berlin"] = 4;
+  comboboxSvgIDDict["Brandenburg"] = 5;
+  comboboxSvgIDDict["Bremen"] = 6;
+  comboboxSvgIDDict["Hamburg"] = 7;
+  comboboxSvgIDDict["Hessen"] = 8;
+  comboboxSvgIDDict["MecklenburgVorpommern"] = 9;
+  comboboxSvgIDDict["Niedersachsen"] = 10;
+  comboboxSvgIDDict["NordrheinWestfalen"] = 11;
+  comboboxSvgIDDict["RheinlandPfalz"] = 12;
+  comboboxSvgIDDict["Saarland"] = 13;
+  comboboxSvgIDDict["Sachsen"] = 14;
+  comboboxSvgIDDict["SachsenAnhalt"] = 15;
+  comboboxSvgIDDict["SchleswigHolstein"] = 16;
+  comboboxSvgIDDict["Thueringen"] = 17;
+  
+
+  var cmbIndex = comboboxSvgIDDict[pathId];
+  document.getElementsByClassName("ComboboxItem")[cmbIndex].click();
+}
+
+// Funktion um zwischen Weltkarte und Burtin-Chart zu switchen
+function ChangeMainViewToMainViewIndex(mainViewIndex)
+{
+    
+}
+
+function ShowChartLeftClick() {
+
+  var baseClassNames = "bk-root";
+  var chartIdArr = [ "Graph", "Barchart", "Piechart" ];
+  var chartIdArr = g_chartContainerIDs;
+  var classArrLinks = [ "Links0", "Links1", "Links2" ]; // TODO: Global machen, um sich einen Aufruf zu sparen
+
+  console.log("OldIndex: " + g_chartIndex);
+  g_chartIndex = GetNextChartIndexLeft(g_chartIndex, chartIdArr);
+  var currentChartIndex_i = g_chartIndex;
+  console.log("NewIndex: " + g_chartIndex);
+   
+ for(var i = 0; i < chartIdArr.length; i++) {
+   var currentChartIndex_i = GetNextChartIndexLeft(currentChartIndex_i, chartIdArr);
+   var currentChart = document.getElementById(chartIdArr[currentChartIndex_i]);
+   currentChart.className = baseClassNames + " " + classArrLinks[(chartIdArr.length - 1) - i];
+ } 
+}
+
+function ShowChartRightClick() {
+  var baseClassNames = "bk-root";
+  var chartIdArr = [ "Graph", "Barchart", "Piechart" ];
+  var chartIdArr = g_chartContainerIDs;
+  var classArrRechts = [ "Rechts0", "Rechts1", "Rechts2" ]; // TODO: Global machen, um sich einen Aufruf zu sparen
+
+  g_chartIndex = GetNextChartIndexRight(g_chartIndex, chartIdArr);
+  var currentChartIndex_i = g_chartIndex;
+   
+ for(var i = 0; i < chartIdArr.length; i++) {
+   var currentChartIndex_i = GetNextChartIndexRight(currentChartIndex_i, chartIdArr);
+   var currentChart = document.getElementById(chartIdArr[currentChartIndex_i]);
+   currentChart.className = baseClassNames + " " + classArrRechts[(chartIdArr.length - 1) - i];
+ } 
+}
+
+
+
+
+function ShowChart(land)
+{
+    //console.log("ShowChart: ");
+    //console.log(land);
+
+    if(land != "Ganz Deutschland")
+    {
+        console.log("Zeige Bundesland");
+        g_isCurrentViewMain = 0;
+        HideBRD();
+        document.getElementById("ChartContainer").className = "I";
+
+        // Land wie in internationaler Covid-19-Datenbank darstellen
+        var landUtf7 = BundeslandIdDict[land];
+        if (landUtf7 == undefined)
+          landUtf7 = land;
+
+       
+        RenderCharts(landUtf7);
+        
+        //document.getElementById("ChartContainer").className = "I";
+
+        // Beim ersten anzeigen ist es OK wenn der ChartContainerWrapper ueber eine Animation angezeigt wird
+        document.getElementById("ChartContainer").className = "I ChartEinblenden"; 
+
+        // Resizing der Charts direkt nachdem sie geladen wurden
+        HandleWindowResizeForBokehCharts();
+    }
+    else
+    {
+        console.log("Zeige Deutschlandkarte");
+        g_isCurrentViewMain = 1;
+        ShowBRD(); 
+    }
+}
+
+function HideGraph()
+{
+    document.getElementById("ChartContainer").className = "O";
+    //document.getElementById("ChartContainer").className = "O ChartAusblenden";
+    //document.getElementById("ChartContainer").className = "ChartAusblenden";
+}
+
+function HideBRD()
+{
+    //document.getElementById("BRDContainer").className = "O";
+    document.getElementById("BRDView").className = "O";
+    
+}
+
+function ShowBRD()
+{
+    HideGraph();
+    //document.getElementById("BRDContainer").className = "SVGContainer";
+    document.getElementById("BRDView").className = "";
+}
+
+
+function GetLeftPosition(myElement) {
+	// return myElement.clientLeft;  
+  //return myElement.getBoundingClientRect().pageXOffset;
+  return myElement.getBoundingClientRect().left;
+}
+
+function ScrollToChartIndex(chartIndex) {
+  var l1 = 0;
+  var l2 = GetLeftPosition(barChartContainerWrapper) - GetLeftPosition(graphContainer);
+  var l3 = GetLeftPosition(pieChartContainer) - GetLeftPosition(graphContainer);
+  
+  var leftPositionsForCharts = Array();
+  leftPositionsForCharts.push(l1);
+  leftPositionsForCharts.push(l2);
+  leftPositionsForCharts.push(l3);
+  
+  ChartContainer.scrollTo(leftPositionsForCharts[chartIndex], 0);
+}
+

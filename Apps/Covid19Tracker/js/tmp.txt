@@ -1,0 +1,261 @@
+diff --git a/FinalVersion/js/index.js b/FinalVersion/js/index.js
+index 47af50d..6107c05 100644
+--- a/FinalVersion/js/index.js
++++ b/FinalVersion/js/index.js
+@@ -4,7 +4,8 @@ var g_mainViewIndex = 0;
+ var g_chartIndex = 0;
+ var g_mainViewContainerIDs = ["BRDContainerWrapper", "BurtinChartContainerWrapper"];
+ var g_chartContainerIDs = ["graphContainer", "barChartContainer", "pieChartContainer"];
+-var g_chartContainerIDs = ["graphContainer", "barChartContainer", "pieChartContainer"];
++var g_chartContainerIDs = ["graphContainer", "barChartContainerWrapper", "pieChartContainer"];
++var g_chartIndex = 0;
+ 
+ var menueShown = 0;
+ 
+@@ -103,169 +104,102 @@ function ChangeMainViewToMainViewIndex(mainViewIndex)
+     
+ }
+ 
+-// Funktion um zwischen Graph, Barchart und PieChart zu switchen
+-function ChangeChartToChartIndex(previousChartIndex, newChartIndex, left0right1)
++function ShowChartLeftClick() {
++
++  var baseClassNames = "bk-root";
++  var chartIdArr = [ "Graph", "Barchart", "Piechart" ];
++  var chartIdArr = g_chartContainerIDs;
++  var classArrLinks = [ "Links0", "Links1", "Links2" ]; // TODO: Global machen, um sich einen Aufruf zu sparen
++
++  console.log("OldIndex: " + g_chartIndex);
++  g_chartIndex = GetNextChartIndexLeft(g_chartIndex, chartIdArr);
++  var currentChartIndex_i = g_chartIndex;
++  console.log("NewIndex: " + g_chartIndex);
++   
++ for(var i = 0; i < chartIdArr.length; i++) {
++   var currentChartIndex_i = GetNextChartIndexLeft(currentChartIndex_i, chartIdArr);
++   var currentChart = document.getElementById(chartIdArr[currentChartIndex_i]);
++   currentChart.className = baseClassNames + " " + classArrLinks[(chartIdArr.length - 1) - i];
++ } 
++}
++
++function ShowChartRightClick() {
++  var baseClassNames = "bk-root";
++  var chartIdArr = [ "Graph", "Barchart", "Piechart" ];
++  var chartIdArr = g_chartContainerIDs;
++  var classArrRechts = [ "Rechts0", "Rechts1", "Rechts2" ]; // TODO: Global machen, um sich einen Aufruf zu sparen
++
++  g_chartIndex = GetNextChartIndexRight(g_chartIndex, chartIdArr);
++  var currentChartIndex_i = g_chartIndex;
++   
++ for(var i = 0; i < chartIdArr.length; i++) {
++   var currentChartIndex_i = GetNextChartIndexRight(currentChartIndex_i, chartIdArr);
++   var currentChart = document.getElementById(chartIdArr[currentChartIndex_i]);
++   currentChart.className = baseClassNames + " " + classArrRechts[(chartIdArr.length - 1) - i];
++ } 
++}
++
++
++
++
++function ShowChart(land)
+ {
+-  // Schleife nicht mehr notwendig, da wir nun die beiden relvanten Indeces haben (chart das aktuell angezeigt wird, naechstes Chart)
+-  /*
+-  for(var i = 0; i < g_chartContainerIDs.length; i++)
+-  {
+-    var currentChartContainer = document.getElementById(g_chartContainerIDs[i]);
++    //console.log("ShowChart: ");
++    //console.log(land);
+ 
+-    if (i == chartIndex)
++    if(land != "Ganz Deutschland")
+     {
+-        console.log("Chart " + i + " wird angezeigt");
+-        currentChartContainer.className = "bk-root ChartEinblenden I";
++        console.log("Zeige Bundesland");
++        g_isCurrentViewMain = 0;
++        HideBRD();
++        document.getElementById("ChartContainer").className = "I";
++
++        // Land wie in internationaler Covid-19-Datenbank darstellen
++        var landUtf7 = BundeslandIdDict[land];
++        if (landUtf7 == undefined)
++          landUtf7 = land;
++
++       
++        RenderCharts(landUtf7);
++        
++        //document.getElementById("ChartContainer").className = "I";
++
++        // Beim ersten anzeigen ist es OK wenn der ChartContainerWrapper ueber eine Animation angezeigt wird
++        document.getElementById("ChartContainer").className = "I ChartEinblenden"; 
++
++        // Resizing der Charts direkt nachdem sie geladen wurden
++        HandleWindowResizeForBokehCharts();
+     }
+     else
+     {
+-        console.log("Chart " + i + " wird versteckt");
+-        currentChartContainer.className = "bk-root ChartAusblenden";
++        console.log("Zeige Deutschlandkarte");
++        g_isCurrentViewMain = 1;
++        ShowBRD(); 
+     }
+-  }
+-  */
+-
+-      var currentChartContainer = document.getElementById(g_chartContainerIDs[previousChartIndex]);
+-      var nextChartContainer = document.getElementById(g_chartContainerIDs[newChartIndex]);
+-
+-      var einblendEffektKlasse = "";
+-      var ausblendEffektKlasse = "";
+-      if (left0right1 == 0)
+-      {     
+-          einblendEffektKlasse = "bk-root ChartEinblendenVonRechts";
+-          ausblendEffektKlasse = "bk-root ChartAusblendenNachLinks";
+-      }
+-      else if (left0right1 == 1)
+-      {
+-          einblendEffektKlasse = "bk-root ChartEinblendenVonLinks";
+-          ausblendEffektKlasse = "bk-root ChartAusblendenNachRechts";
+-      }
+-
+-      //console.log("Chart " + currentChartContainer + " wird versteckt");
+-      //currentChartContainer.className = "bk-root ChartAusblenden";
+-      currentChartContainer.className = ausblendEffektKlasse;
+-
+-      console.log("Chart " + nextChartContainer + " wird angezeigt");
+-      //nextChartContainer.className = "bk-root ChartEinblenden I";
+-      nextChartContainer.className = einblendEffektKlasse;
+-
+-  
+ }
+ 
+-function ValidateNewIndex(index, maxIndex)
++function HideGraph()
+ {
+-  if(index > maxIndex)
+-  {
+-    return 0;
+-  }
+-  else if(index < 0)
+-  {
+-    return maxIndex;
+-  }
+-  else
+-  {
+-    return index;
+-  }
++    document.getElementById("ChartContainer").className = "O";
++    //document.getElementById("ChartContainer").className = "O ChartAusblenden";
++    //document.getElementById("ChartContainer").className = "ChartAusblenden";
+ }
+ 
+-function NaechstesChart()
++function HideBRD()
+ {
+-  if (g_isCurrentViewMain == 1)
+-  {
+-    g_mainViewIndex++;
+-    g_mainViewIndex = ValidateNewIndex(g_mainViewIndex, g_mainViewContainerIDs.length -1);
+-
+-    ChangeMainViewToMainViewIndex(g_mainViewIndex);
+-  }
+-  else if (g_isCurrentViewMain == 0)
+-  {
+-    var previousChartIndex = g_chartIndex;
+-
+-    g_chartIndex++;
+-    g_chartIndex = ValidateNewIndex(g_chartIndex, g_chartContainerIDs.length -1);
+-    ChangeChartToChartIndex(previousChartIndex, g_chartIndex, 1);
+-  }
++    //document.getElementById("BRDContainer").className = "O";
++    document.getElementById("BRDView").className = "O";
++    
+ }
+ 
+-function VorherigesChart()
++function ShowBRD()
+ {
+-  if (g_isCurrentViewMain == 1)
+-  {
+-    g_mainViewIndex--;
+-    g_mainViewIndex = ValidateNewIndex(g_mainViewIndex, g_mainViewContainerIDs.length -1);
+-
+-    ChangeMainViewToMainViewIndex(g_mainViewIndex);
+-  }
+-  else if (g_isCurrentViewMain == 0)
+-  {
+-    var previousChartIndex = g_chartIndex;
+-
+-    g_chartIndex--;
+-    g_chartIndex = ValidateNewIndex(g_chartIndex, g_chartContainerIDs.length -1);
+-    ChangeChartToChartIndex(previousChartIndex, g_chartIndex, 0);
+-  }
++    HideGraph();
++    //document.getElementById("BRDContainer").className = "SVGContainer";
++    document.getElementById("BRDView").className = "";
+ }
+ 
+ 
+-
+-      function ShowChart(land)
+-      {
+-          //console.log("ShowChart: ");
+-          //console.log(land);
+-
+-          if(land != "Ganz Deutschland")
+-          {
+-              console.log("Zeige Bundesland");
+-              g_isCurrentViewMain = 0;
+-              HideBRD();
+-              document.getElementById("ChartContainer").className = "I";
+-
+-              // Land wie in internationaler Covid-19-Datenbank darstellen
+-              var landUtf7 = BundeslandIdDict[land];
+-              if (landUtf7 == undefined)
+-                landUtf7 = land;
+-
+-             
+-              RenderCharts(landUtf7);
+-              
+-              //document.getElementById("ChartContainer").className = "I";
+-
+-              // Beim ersten anzeigen ist es OK wenn der ChartContainerWrapper ueber eine Animation angezeigt wird
+-              document.getElementById("ChartContainer").className = "I ChartEinblenden"; 
+-
+-              // Resizing der Charts direkt nachdem sie geladen wurden
+-              HandleWindowResizeForBokehCharts();
+-          }
+-          else
+-          {
+-              console.log("Zeige Deutschlandkarte");
+-              g_isCurrentViewMain = 1;
+-              ShowBRD(); 
+-          }
+-      }
+-
+-      function HideGraph()
+-      {
+-          document.getElementById("ChartContainer").className = "O";
+-          //document.getElementById("ChartContainer").className = "O ChartAusblenden";
+-          //document.getElementById("ChartContainer").className = "ChartAusblenden";
+-      }
+-
+-      function HideBRD()
+-      {
+-          //document.getElementById("BRDContainer").className = "O";
+-          document.getElementById("BRDView").className = "O";
+-          
+-      }
+-
+-      function ShowBRD()
+-      {
+-          HideGraph();
+-          //document.getElementById("BRDContainer").className = "SVGContainer";
+-          document.getElementById("BRDView").className = "";
+-      }
+-
+-
+ function GetLeftPosition(myElement) {
+ 	// return myElement.clientLeft;  
+   //return myElement.getBoundingClientRect().pageXOffset;
